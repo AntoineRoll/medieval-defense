@@ -1,7 +1,7 @@
 # Gameplay
 
 ## Goal
-Survive 10 waves of omnidirectional enemy attacks using placed units. No towers in MVP (towers added later).
+Survive 10 waves of omnidirectional enemy attacks using placed units and defensive buildings.
 
 ## Win / Lose
 - **Win**: Survive all 10 waves
@@ -43,15 +43,15 @@ Two primary entity types with distinct combat rules:
   1. Military units (highest priority): Attack if within enemy detection radius (19 units)
   2. Buildings (lower priority): Attack if no military units in range and building is within detection radius
   3. Default: Move to and attack Town Center if no valid targets in range
-- Stats: 50 HP, 5 units speed (80px), 10 damage to base per hit, detection radius 19 units (304px)
+- Stats: 50 HP, 1 tile/s speed (64px), 10 damage to base per hit, detection radius 19 units (1216px), hitbox 64×64 square
 - Targeting uses `find_best_target()` with `global_position` for distance checks
 
 ### Waves
 - 10 waves total, each spawns `wave_num` enemies
 - Enemies spawn at random edge positions around map edge
 - **Timing**:
-  - Intra-wave spawn interval: Configurable delay (1s default) between individual enemy spawns in a wave
-  - Inter-wave cooldown: Next wave starts immediately after all current wave enemies are dead or reached base (no additional delay)
+  - Intra-wave spawn interval: Configurable delay (2s default in wave resources) between individual enemy spawns in a wave
+  - Inter-wave cooldown: Countdown timer (45s for wave 1, 30s for subsequent waves), configurable in GameConfig. Can be skipped via `>>` button.
 - Auto-placing units is disabled (`auto_place_units = false` in main.gd)
 
 ### Currency (Gold)
@@ -61,15 +61,16 @@ Two primary entity types with distinct combat rules:
 - No passive gold generation (MVP simplification)
 
 ## Input Handling
-- Unit selection: `is_clicked(event)` with `get_global_mouse_position().distance_to(global_position) < click_radius`
+- Unit selection: `is_clicked(event)` with AABB rectangular check: `abs(diff.x) < click_radius and abs(diff.y) < click_radius`
 - Left-click: toggle selection, click nothing = deselect all
-- Right-click: move selected unit (overrides auto-engage and return-to-base), close pause menu if open
+- Right-click: move selected unit (grid-snapped, updates GridManager occupancy), close pause menu if open
 - ESC: toggle pause menu
 - Units auto-return to base position when idle (no target, no manual move)
 
 ## UI Structure
 (UI elements measured in pixels, not grid units)
-- `UI/UIRoot`: Top-left HUD (HP bar, gold, wave, unit buttons)
+- `UI/UIRoot`: Top-left HUD (HP bar, gold, wave label, pause button, skip button). Gold flashes yellow on change (UX-DR02). Skip button (`>>`) visible during wave countdown to skip straight to combat.
 - `UI/SergeantBonus`: Top-right shield icon + label showing active sergeant bonus
-- `UI/ActionBar`: Bottom bar (60px), shows selected unit/building name + HP in HBoxContainer with 6 PanelContainers
-- `UI/PauseMenu`: Centered popup with dark overlay (pause_mode=2 for PROCESS)
+- `UI/InfoPanel`: Bottom-left panel (~20% width = 256px, 120px height) showing selected entity name and HP. Hidden when nothing selected. Semi-transparent dark rounded background (alpha 0.65, 8px corner radius).
+- `UI/PurchaseBar`: Bottom-center panel (~50% width = 640px, 150px height), always visible during gameplay. Semi-transparent dark rounded background (alpha 0.65, 8px corner radius). Contains a grid of 64×64 square tiles (6 columns × 2 rows). **Row 1** (top): Unit purchase buttons (Foot Soldier, Archer, Cavalry) followed by 3 empty placeholder slots for future units. **Row 2** (bottom): Building purchase button (Wood Tower) followed by 5 empty placeholder slots for future buildings. Buttons are 64×64 icon squares with semi-transparent backgrounds. Hovering reveals a columnar tooltip with stats (cost, HP, damage, range/melee, speed). Buttons dimmed when gold insufficient. Empty slots shown as dimmed squares (`Color(0.15, 0.15, 0.2, 0.3)`) to indicate future expansion space.
+- `UI/PauseMenu`: Centered popup with dark overlay (process_mode=2 for ALWAYS)

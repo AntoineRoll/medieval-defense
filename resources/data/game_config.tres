@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="GameConfig" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/game_config.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+entity_cap = 50
+wave_countdown_time = 30.0
+initial_wave_countdown_time = 45.0
+foot_soldier_cost = 50
+archer_cost = 75
+cavalry_cost = 100
+tower_cost = 25
+kill_reward = 10
+starting_gold = 200
+sergeant_bonus_mult = 1.2
+unit_hitbox_radius = 64.0
+enemy_hitbox_radius = 64.0
+building_hitbox_radius = 64.0
+grid_tile_size = 64
+grid_width = 16
+grid_height = 9

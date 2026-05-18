@@ -1,0 +1,15 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource path="res://scripts/units/unit_stats.gd" type="Script" id=1]
+
+[resource]
+script = ExtResource( 1 )
+unit_name = "Foot Soldier"
+max_hp = 100
+speed = 64.0
+detection_radius = 384.0
+attack_range = 128.0
+attack_damage = 10
+attack_cooldown = 1.0
+is_ranged = false
+cost = 50
