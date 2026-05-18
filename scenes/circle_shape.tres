@@ -1,8 +1,0 @@
-[gd_resource type="CircleShape2D" load_steps=2 format=2]
-
-[sub_resource type="CircleShape2D" id=1]
-radius = 12
-
-[resource]
-resource_local_to_scene = false
-radius = 12
